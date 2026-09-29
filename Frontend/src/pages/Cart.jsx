@@ -1,10 +1,16 @@
-import { useContext } from "react";
 import { Link } from "react-router-dom";
 import CartItem from "../components/CartItem";
-import { CartContext } from "../context/cartContext";
+import { useSelector } from "react-redux";
+import {
+  selectCart,
+  selectCartCount,
+  selectCartTotal,
+} from "../redux/cartSelectors";
 
 function Cart() {
-  const { cart, cartCount, cartTotal } = useContext(CartContext);
+  const cart = useSelector(selectCart);
+  const cartCount = useSelector(selectCartCount);
+  const cartTotal = useSelector(selectCartTotal);
   if (cart.length === 0) {
     return (
       <main className="flex min-h-[60vh] items-center justify-center px-4">
@@ -53,9 +59,7 @@ function Cart() {
 
           {/* Cart Summary */}
           <aside className="h-fit rounded-xl bg-white p-6 shadow-sm">
-            <h2 className="text-xl font-bold text-gray-900">
-              Cart Summary
-            </h2>
+            <h2 className="text-xl font-bold text-gray-900">Cart Summary</h2>
 
             <div className="mt-6 space-y-3 text-sm">
               <div className="flex justify-between text-gray-600">

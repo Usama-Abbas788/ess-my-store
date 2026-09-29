@@ -1,4 +1,9 @@
-function cartReducer(state, action) {
+const initialCart = ()=>{
+  const savedCart = localStorage.getItem('cart');
+  return savedCart? JSON.parse(savedCart) : [];
+}
+const initialState = initialCart();
+function cartReducer(state = initialState, action) {
   switch (action.type) {
     case "ADD TO CART": {
       const existingItem = state.find((item) => item.id === action.payload.id);

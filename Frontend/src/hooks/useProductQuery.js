@@ -7,7 +7,6 @@ const usePtoductQuery = (id)=>{
         queryFn : ()=>getProducById(id),
         enabled : !!id,
         refetchOnMount: "always",
-        refetchOnWindowFocus: true,
     })
 }
 export default usePtoductQuery

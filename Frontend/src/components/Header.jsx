@@ -1,12 +1,12 @@
 import { useContext, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Menu, ShoppingCart, X } from "lucide-react";
-
-import { CartContext } from "../context/cartContext";
 import { AuthContext } from "../context/authContext";
+import { useSelector } from "react-redux";
+import { selectCartCount } from "../redux/cartSelectors";
 
 function Header() {
-  const { cartCount } = useContext(CartContext);
+  const cartCount = useSelector(selectCartCount);
   const { currentUser, logout } = useContext(AuthContext);
 
   const navigate = useNavigate();

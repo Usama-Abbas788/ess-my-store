@@ -1,11 +1,10 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
 import usePtoductQuery from "../hooks/useProductQuery";
-import { useContext } from "react";
-import { CartContext } from "../context/cartContext";
+import { useDispatch } from "react-redux";
 
 function ProductDetail() {
   const { id } = useParams();
-  const { dispatch } = useContext(CartContext);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { data: response, isPending, isError, error } = usePtoductQuery(id);
   if (isPending) {
@@ -36,8 +35,7 @@ function ProductDetail() {
       </main>
     );
   }
-  console.log(response);
-  const product = response?.data || [];
+  const product = response?.data;
   if (!product) {
     return (
       <main className="flex min-h-[60vh] items-center justify-center px-4">

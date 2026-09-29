@@ -6,20 +6,21 @@ import App from "./App.jsx";
 import { BrowserRouter } from "react-router-dom";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import queryClient from "./queryClient";
-import { CartProvider } from "./context/cartContext.jsx";
 import { AuthProvider } from "./context/authContext.jsx";
+import { Provider } from "react-redux";
+import store from "./redux/store";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <AuthProvider>
-          <CartProvider>
+      <Provider store={store}>
+        <BrowserRouter>
+          <AuthProvider>
             <App />
-          </CartProvider>
-        </AuthProvider>
-      </BrowserRouter>
-      <ReactQueryDevtools initialIsOpen={false} />
+          </AuthProvider>
+        </BrowserRouter>
+        <ReactQueryDevtools initialIsOpen={false} />
+      </Provider>
     </QueryClientProvider>
   </StrictMode>,
 );

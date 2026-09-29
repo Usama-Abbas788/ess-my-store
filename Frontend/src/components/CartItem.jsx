@@ -1,9 +1,8 @@
-import { useContext } from "react";
-import { CartContext } from "../context/cartContext";
+import { useDispatch } from "react-redux";
 import { Minus, Plus, Trash2 } from "lucide-react";
 
 function CartItem({ item }) {
-  const { dispatch } = useContext(CartContext);
+  const dispatch = useDispatch();
 
   const removeFromCart = () => {
     dispatch({

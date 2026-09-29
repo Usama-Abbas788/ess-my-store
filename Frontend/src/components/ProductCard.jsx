@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 
 function ProductCard({ product }) {
+  console.log(product.image);
   return (
     <article className="flex h-full flex-col overflow-hidden rounded-xl bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg">
       <Link
