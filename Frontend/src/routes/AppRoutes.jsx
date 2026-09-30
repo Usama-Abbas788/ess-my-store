@@ -11,6 +11,8 @@ import AdminProducts from "../pages/AdminProducts";
 import AddProduct from "../pages/AddProduct";
 import EditProduct from "../pages/EditProduct";
 import AdminLayout from "../components/AdminLayout";
+import ProtectedRoute from "../components/ProtectedRoute";
+import AdminRoute from "../components/AdminRoute";
 
 function AppRoutes() {
   return (
@@ -19,19 +21,37 @@ function AppRoutes() {
       <Route path="/signup" element={<Signup />} />
 
       {/* Admin Routes */}
-      <Route element={<AdminLayout />}>
-        <Route path="/admin/products" element={<AdminProducts />} />
-        <Route path="/admin/products/add" element={<AddProduct />} />
-        <Route path="/admin/products/:id/edit" element={<EditProduct />} />
+      <Route element={<AdminRoute />}>
+        <Route element={<AdminLayout />}>
+          <Route
+            path="/admin/products"
+            element={<AdminProducts />}
+          />
+
+          <Route
+            path="/admin/products/add"
+            element={<AddProduct />}
+          />
+
+          <Route
+            path="/admin/products/:id/edit"
+            element={<EditProduct />}
+          />
+        </Route>
       </Route>
 
       {/* User Routes */}
-      <Route element={<Layout />}>
-        <Route path="/home" element={<Home />} />
-        <Route path="/products/:id" element={<ProductDetail />} />
-        <Route path="/cart" element={<Cart />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<Contact />} />
+      <Route element={<ProtectedRoute />}>
+        <Route element={<Layout />}>
+          <Route path="/home" element={<Home />} />
+          <Route
+            path="/products/:id"
+            element={<ProductDetail />}
+          />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+        </Route>
       </Route>
     </Routes>
   );
