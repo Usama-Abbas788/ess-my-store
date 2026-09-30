@@ -1,36 +1,14 @@
 import { useDispatch } from "react-redux";
 import { Minus, Plus, Trash2 } from "lucide-react";
+import {
+  increaseQuantity,
+  decreaseQuantity,
+  removeFromCart,
+} from "../redux/cartSlice";
 
 function CartItem({ item }) {
   const dispatch = useDispatch();
-
-  const removeFromCart = () => {
-    dispatch({
-      type: "REMOVE FROM CART",
-      payload: {
-        id: item.id,
-      },
-    });
-  };
-
-  const increaseQuantity = () => {
-    dispatch({
-      type: "INCREASE QUANTITY",
-      payload: {
-        id: item.id,
-      },
-    });
-  };
-
-  const decreaseQuantity = () => {
-    dispatch({
-      type: "DECREASE QUANTITY",
-      payload: {
-        id: item.id,
-      },
-    });
-  };
-
+  
   return (
     <article className="flex flex-col gap-5 rounded-xl bg-white p-5 shadow-sm sm:flex-row sm:items-center">
       <div className="flex h-32 w-full items-center justify-center rounded-lg bg-gray-100 p-4 sm:h-28 sm:w-28 sm:shrink-0">
@@ -46,14 +24,12 @@ function CartItem({ item }) {
           {item.title}
         </h2>
 
-        <p className="mt-2 font-bold text-gray-900">
-          ${item.price}
-        </p>
+        <p className="mt-2 font-bold text-gray-900">${item.price}</p>
 
         <div className="mt-3 flex items-center gap-3">
           <button
             type="button"
-            onClick={decreaseQuantity}
+            onClick={() => dispatch(decreaseQuantity(item.id))}
             className="cursor-pointer flex h-9 w-9 items-center justify-center rounded-lg border border-gray-300 text-lg font-semibold text-gray-700 transition hover:bg-gray-100"
           >
             <Minus size={16} />
@@ -65,7 +41,7 @@ function CartItem({ item }) {
 
           <button
             type="button"
-            onClick={increaseQuantity}
+            onClick={() => dispatch(increaseQuantity(item.id))}
             className="cursor-pointer flex h-9 w-9 items-center justify-center rounded-lg border border-gray-300 text-lg font-semibold text-gray-700 transition hover:bg-gray-100"
           >
             <Plus size={16} />
@@ -80,7 +56,7 @@ function CartItem({ item }) {
 
         <button
           type="button"
-          onClick={removeFromCart}
+          onClick= {() => dispatch(removeFromCart(item.id))}
           className="cursor-pointer w-full rounded-lg border border-red-200 px-4 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-50 sm:w-auto"
         >
           <Trash2 size={16} />

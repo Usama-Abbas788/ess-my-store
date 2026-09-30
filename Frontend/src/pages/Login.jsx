@@ -1,11 +1,13 @@
-import { useContext, useState } from "react";
-import { AuthContext } from "../context/authContext";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
-
+import { useDispatch, useSelector } from "react-redux";
+import { setCurrentUser } from "../redux/authSlice";
+import { selectUsers } from "../redux/authSelectors";
 
 function Login() {
-  const { login } = useContext(AuthContext);
+  const dispatch = useDispatch();
+  const users = useSelector(selectUsers);
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -20,12 +22,16 @@ function Login() {
   const handleSubmit = (event) => {
     event.preventDefault();
     setError("");
-    const result = login(formData.email, formData.password);
-    if (!result.success) {
-      setError(result.message);
+    const user = users.find(
+      (user) =>
+        user.email === formData.email && user.password === formData.password,
+    );
+    if (!user) {
+      setError("Invalid email or password");
       return;
     }
-    if (result.user.role === "admin") {
+    dispatch(setCurrentUser(user));
+    if (user.role === "admin") {
       navigate("/admin/products");
     } else {
       navigate("/home");

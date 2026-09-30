@@ -1,14 +1,13 @@
 import { Outlet, useNavigate } from "react-router-dom";
 import { LogOut } from "lucide-react";
-import { useContext } from "react";
-import { AuthContext } from "../context/authContext";
+import { useDispatch } from "react-redux";
+import { logout } from "../redux/authSlice";
 
 function AdminLayout() {
   const navigate = useNavigate();
-  const { logout } = useContext(AuthContext);
-
+  const dispatch = useDispatch();
   const handleLogout = () => {
-    logout();
+    dispatch(logout());
     navigate("/");
   };
 

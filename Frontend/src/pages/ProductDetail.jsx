@@ -1,6 +1,7 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
 import usePtoductQuery from "../hooks/useProductQuery";
 import { useDispatch } from "react-redux";
+import { addToCart } from "../redux/cartSlice";
 
 function ProductDetail() {
   const { id } = useParams();
@@ -45,13 +46,7 @@ function ProductDetail() {
       </main>
     );
   }
-  const addToCart = () => {
-    dispatch({
-      type: "ADD TO CART",
-      payload: product,
-    });
-    navigate("/cart");
-  };
+
   return (
     <main className="min-h-screen px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
@@ -89,7 +84,10 @@ function ProductDetail() {
             </p>
 
             <button
-              onClick={addToCart}
+              onClick={() => {
+                dispatch(addToCart(product));
+                navigate("/cart");
+              }}
               type="button"
               className="mt-8 w-full rounded-lg bg-gray-900 px-5 py-3 font-medium text-white transition hover:bg-gray-700 sm:w-fit"
             >

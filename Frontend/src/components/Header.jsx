@@ -1,18 +1,17 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Menu, ShoppingCart, X } from "lucide-react";
-import { AuthContext } from "../context/authContext";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectCartCount } from "../redux/cartSelectors";
+import { selectCurrentUser } from "../redux/authSelectors";
+import { logout } from "../redux/authSlice";
 
 function Header() {
   const cartCount = useSelector(selectCartCount);
-  const { currentUser, logout } = useContext(AuthContext);
-
+  const dispatch = useDispatch();
+  const currentUser = useSelector(selectCurrentUser);
   const navigate = useNavigate();
-
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
   const navLinkClass = ({ isActive }) =>
     `block transition-colors ${
       isActive ? "text-white" : "text-gray-300 hover:text-white"
@@ -23,7 +22,7 @@ function Header() {
   };
 
   const handleLogout = () => {
-    logout();
+    dispatch(logout());
     closeMenu();
     navigate("/");
   };

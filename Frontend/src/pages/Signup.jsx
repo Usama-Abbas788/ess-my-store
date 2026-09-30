@@ -1,10 +1,13 @@
-import { useContext, useState } from "react";
-import { AuthContext } from "../context/authContext";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { addUser } from "../redux/authSlice";
+import { selectUsers } from "../redux/authSelectors";
 
 function Signup() {
-  const { signup } = useContext(AuthContext);
+  const dispatch = useDispatch();
+  const users = useSelector(selectUsers);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
@@ -23,11 +26,24 @@ function Signup() {
   const handleSubmit = (event) => {
     event.preventDefault();
     setError("");
-    const result = signup(formData);
-    if (!result.success) {
-      setError(result.message);
+
+    const existingUser = users.find((user) => user.email === formData.email);
+
+    if (existingUser) {
+      setError("An account with this email already exists.");
       return;
     }
+
+    const newUser = {
+      id: Date.now(),
+      name: formData.name,
+      email: formData.email,
+      password: formData.password,
+      role: "user",
+    };
+
+    dispatch(addUser(newUser));
+
     navigate("/");
   };
   return (

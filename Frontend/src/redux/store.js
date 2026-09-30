@@ -1,12 +1,16 @@
-import { applyMiddleware, combineReducers, createStore } from "redux";
-import cartReducer from "../reducers/cartReducer";
-import loggerMiddleware from "./loggerMiddleware";
-import cartMiddleware from "./cartMiddleware";
+import { configureStore } from "@reduxjs/toolkit";
+import cartReducer from "./cartSlice";
+import authReducer from "./authSlice";
+import persistantMiddleware from "./persistantMiddleware";
 
-const rootReducer = combineReducers({
-  cart: cartReducer,
+const store = configureStore({
+  reducer: {
+    cart: cartReducer,
+    auth: authReducer,
+  },
+
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(persistantMiddleware),
 });
-
-const store = createStore(rootReducer,applyMiddleware(loggerMiddleware,cartMiddleware));
 
 export default store;
