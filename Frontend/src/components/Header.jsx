@@ -1,15 +1,17 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Menu, ShoppingCart, X } from "lucide-react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { selectCartCount } from "../redux/cartSelectors";
-import { selectCurrentUser } from "../redux/authSelectors";
-import { logout } from "../redux/authSlice";
+import { useLogoutMutation } from "../hooks/useLogoutMutation";
+import { AuthContext } from "../context/AuthContext";
+import { clearAccessToken } from "../services/apiService";
 
 function Header() {
   const cartCount = useSelector(selectCartCount);
-  const dispatch = useDispatch();
-  const currentUser = useSelector(selectCurrentUser);
+  const { mutate: logout, isPending } = useLogoutMutation();
+  const { data } = useContext(AuthContext);
+  const currentUser = data?.data;
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navLinkClass = ({ isActive }) =>
@@ -22,9 +24,13 @@ function Header() {
   };
 
   const handleLogout = () => {
-    dispatch(logout());
-    closeMenu();
-    navigate("/");
+    logout(undefined, {
+      onSuccess: () => {
+        clearAccessToken();
+        closeMenu();
+        navigate("/");
+      },
+    });
   };
 
   return (
@@ -71,9 +77,10 @@ function Header() {
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="text-gray-300 transition-colors hover:text-white"
+                  disabled={isPending}
+                  className="text-gray-300 transition-colors hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  Logout
+                  {isPending ? "Logging out..." : "Logout"}
                 </button>
               </>
             )}
@@ -145,9 +152,10 @@ function Header() {
                   <button
                     type="button"
                     onClick={handleLogout}
-                    className="text-left text-gray-300 transition-colors hover:text-white"
+                    disabled={isPending}
+                    className="text-gray-300 transition-colors hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    Logout
+                    {isPending ? "Logging out..." : "Logout"}
                   </button>
                 </>
               )}

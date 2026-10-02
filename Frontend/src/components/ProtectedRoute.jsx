@@ -1,11 +1,24 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { selectCurrentUser } from "../redux/authSelectors";
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
+import LoadingScreen from "./LoadingScreen";
 
 function ProtectedRoute() {
-  const currentUser = useSelector(selectCurrentUser);
+  const { token, data, isPending, isError, isInitializing } =
+    useContext(AuthContext);
 
-  if (!currentUser) {
+  if (isInitializing) {
+    return <LoadingScreen title = {'Loading your account...'}/>
+  }
+  if (!token) {
+    return <Navigate to="/" replace />;
+  }
+
+  if (isPending) {
+    return <LoadingScreen title = {'Loading...'}/>;
+  }
+
+  if (isError || !data?.data) {
     return <Navigate to="/" replace />;
   }
 

@@ -1,51 +1,47 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
-import { useDispatch, useSelector } from "react-redux";
-import { addUser } from "../redux/authSlice";
-import { selectUsers } from "../redux/authSelectors";
+import { useRegisterMutation } from "../hooks/useRegisterMutation";
 
 function Signup() {
-  const dispatch = useDispatch();
-  const users = useSelector(selectUsers);
   const navigate = useNavigate();
+
+  const {
+    mutate,
+    isPending,
+    isError,
+    error,
+  } = useRegisterMutation();
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
   });
+
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
+
+  const validationErrors = error?.response?.data?.errors;
+
   const handleChange = (event) => {
     const { name, value } = event.target;
+
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
   };
+
   const handleSubmit = (event) => {
     event.preventDefault();
-    setError("");
 
-    const existingUser = users.find((user) => user.email === formData.email);
-
-    if (existingUser) {
-      setError("An account with this email already exists.");
-      return;
-    }
-
-    const newUser = {
-      id: Date.now(),
-      name: formData.name,
-      email: formData.email,
-      password: formData.password,
-      role: "user",
-    };
-
-    dispatch(addUser(newUser));
-
-    navigate("/");
+    mutate(formData, {
+      onSuccess: () => {
+        navigate("/");
+      },
+    });
   };
+
   return (
     <main className="flex min-h-[80vh] items-center justify-center px-4 py-10">
       <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-md sm:p-8">
@@ -59,9 +55,10 @@ function Signup() {
           </p>
         </div>
 
-        {error && (
+        {isError && !validationErrors && (
           <div className="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">
-            {error}
+            {error?.response?.data?.message ||
+              "Registration failed. Please try again."}
           </div>
         )}
 
@@ -84,6 +81,12 @@ function Signup() {
               className="w-full rounded-lg border border-gray-300 px-4 py-2.5 outline-none focus:border-gray-900"
               placeholder="Enter your name"
             />
+
+            {validationErrors?.name && (
+              <p className="mt-1 text-sm text-red-600">
+                {validationErrors.name[0]}
+              </p>
+            )}
           </div>
 
           <div>
@@ -104,6 +107,12 @@ function Signup() {
               className="w-full rounded-lg border border-gray-300 px-4 py-2.5 outline-none focus:border-gray-900"
               placeholder="Enter your email"
             />
+
+            {validationErrors?.email && (
+              <p className="mt-1 text-sm text-red-600">
+                {validationErrors.email[0]}
+              </p>
+            )}
           </div>
 
           <div className="relative">
@@ -128,23 +137,33 @@ function Signup() {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="cursor-pointer absolute right-3 top-9 text-gray-500 hover:text-gray-900"
+              className="absolute right-3 top-9 cursor-pointer text-gray-500 hover:text-gray-900"
             >
               {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
+
+            {validationErrors?.password && (
+              <p className="mt-1 text-sm text-red-600">
+                {validationErrors.password[0]}
+              </p>
+            )}
           </div>
 
           <button
             type="submit"
-            className="w-full rounded-lg bg-gray-900 px-4 py-2.5 font-medium text-white transition hover:bg-gray-700"
+            disabled={isPending}
+            className="w-full rounded-lg bg-gray-900 px-4 py-2.5 font-medium text-white transition hover:bg-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Sign Up
+            {isPending ? "Creating Account..." : "Sign Up"}
           </button>
         </form>
 
         <p className="mt-6 text-center text-sm text-gray-600">
           Already have an account?{" "}
-          <Link to="/" className="font-medium text-gray-900 hover:underline">
+          <Link
+            to="/"
+            className="font-medium text-gray-900 hover:underline"
+          >
             Login
           </Link>
         </p>
@@ -152,4 +171,5 @@ function Signup() {
     </main>
   );
 }
+
 export default Signup;

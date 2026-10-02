@@ -1,56 +1,72 @@
 import { useState } from "react";
+import { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
-import { useDispatch, useSelector } from "react-redux";
-import { setCurrentUser } from "../redux/authSlice";
-import { selectUsers } from "../redux/authSelectors";
+import { useLoginMutation } from "../hooks/useLoginMutation";
+import { AuthContext } from "../context/AuthContext";
 
 function Login() {
-  const dispatch = useDispatch();
-  const users = useSelector(selectUsers);
   const navigate = useNavigate();
+  const { setToken } = useContext(AuthContext);
+  const {
+    mutate,
+    isPending,
+    isError,
+    error,
+  } = useLoginMutation();
+
   const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({ email: "", password: "" });
-  const [error, setError] = useState("");
+
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const validationErrors = error?.response?.data?.errors;
+
   const handleChange = (event) => {
     const { name, value } = event.target;
+
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
   };
+
   const handleSubmit = (event) => {
     event.preventDefault();
-    setError("");
-    const user = users.find(
-      (user) =>
-        user.email === formData.email && user.password === formData.password,
-    );
-    if (!user) {
-      setError("Invalid email or password");
-      return;
-    }
-    dispatch(setCurrentUser(user));
-    if (user.role === "admin") {
-      navigate("/admin/products");
-    } else {
-      navigate("/home");
-    }
+
+    mutate(formData, {
+      onSuccess: (response) => {
+        const user = response.data.user;
+        const token = response.data.token;
+        setToken(token);
+        if (user.role === "admin") {
+          navigate("/admin/products");
+        } else {
+          navigate("/home");
+        }
+      },
+    });
   };
+
   return (
     <main className="flex min-h-[80vh] items-center justify-center px-4 py-10">
       <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-md sm:p-8">
         <div className="mb-6 text-center">
-          <h1 className="text-2xl font-bold text-gray-900">Welcome Back</h1>
+          <h1 className="text-2xl font-bold text-gray-900">
+            Welcome Back
+          </h1>
 
           <p className="mt-2 text-sm text-gray-600">
             Login to your MyStore account.
           </p>
         </div>
 
-        {error && (
+        {isError && !validationErrors && (
           <div className="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">
-            {error}
+            {error?.response?.data?.message ||
+              "Login failed. Please try again."}
           </div>
         )}
 
@@ -73,6 +89,12 @@ function Login() {
               className="w-full rounded-lg border border-gray-300 px-4 py-2.5 outline-none focus:border-gray-900"
               placeholder="Enter your email"
             />
+
+            {validationErrors?.email && (
+              <p className="mt-1 text-sm text-red-600">
+                {validationErrors.email[0]}
+              </p>
+            )}
           </div>
 
           <div className="relative">
@@ -97,17 +119,33 @@ function Login() {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="cursor-pointer absolute right-3 top-9 text-gray-500 hover:text-gray-900"
+              className="absolute right-3 top-9 cursor-pointer text-gray-500 hover:text-gray-900"
             >
               {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
+
+            {validationErrors?.password && (
+              <p className="mt-1 text-sm text-red-600">
+                {validationErrors.password[0]}
+              </p>
+            )}
+          </div>
+
+          <div className="text-right">
+            <Link
+              to="/forgot-password"
+              className="text-sm font-medium text-gray-900 hover:underline"
+            >
+              Forgot Password?
+            </Link>
           </div>
 
           <button
             type="submit"
-            className="w-full rounded-lg bg-gray-900 px-4 py-2.5 font-medium text-white transition hover:bg-gray-700"
+            disabled={isPending}
+            className="w-full rounded-lg bg-gray-900 px-4 py-2.5 font-medium text-white transition hover:bg-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Login
+            {isPending ? "Logging in..." : "Login"}
           </button>
         </form>
 
@@ -124,4 +162,5 @@ function Login() {
     </main>
   );
 }
+
 export default Login;

@@ -1,14 +1,21 @@
 import { Outlet, useNavigate } from "react-router-dom";
 import { LogOut } from "lucide-react";
-import { useDispatch } from "react-redux";
-import { logout } from "../redux/authSlice";
+import { useLogoutMutation } from "../hooks/useLogoutMutation";
+import { clearAccessToken } from "../services/apiService";
 
 function AdminLayout() {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const {
+    mutate: logout,
+    isPending,
+  } = useLogoutMutation();
   const handleLogout = () => {
-    dispatch(logout());
-    navigate("/");
+    logout(undefined, {
+      onSuccess: () => {
+        clearAccessToken();
+        navigate("/");
+      },
+    });
   };
 
   return (
@@ -22,10 +29,11 @@ function AdminLayout() {
           <button
             type="button"
             onClick={handleLogout}
-            className="flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-gray-700"
+            disabled={isPending}
+            className="flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <LogOut className="h-4 w-4" />
-            Logout
+            {isPending ? "Logging out..." : "Logout"}
           </button>
         </div>
       </header>

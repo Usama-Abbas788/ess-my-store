@@ -5,7 +5,6 @@ import ProductDetail from "../pages/ProductDetail";
 import About from "../pages/About";
 import Contact from "../pages/Contact";
 import Cart from "../pages/Cart";
-import Login from "../pages/Login";
 import Signup from "../pages/SignUp";
 import AdminProducts from "../pages/AdminProducts";
 import AddProduct from "../pages/AddProduct";
@@ -13,12 +12,17 @@ import EditProduct from "../pages/EditProduct";
 import AdminLayout from "../components/AdminLayout";
 import ProtectedRoute from "../components/ProtectedRoute";
 import AdminRoute from "../components/AdminRoute";
+import ForgotPassword from "../pages/ForgotPassword";
+import ResetPassword from "../pages/ResetPassword";
+import EntryRoute from "./EntryRoute";
 
 function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<Login />} />
+      <Route path="/" element={<EntryRoute />} />
       <Route path="/signup" element={<Signup />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
 
       {/* Admin Routes */}
       <Route element={<AdminRoute />}>
